@@ -61,6 +61,11 @@ public class User implements Serializable {
     private String userProfile;
 
     /**
+     * 用户昵称
+     */
+    private String tags;
+
+    /**
      * 用户角色：user/admin/ban
      */
     private String userRole;
