@@ -4,6 +4,7 @@ import Team from '../pages/Team.vue'
 import Search from '../pages/PageSearch.vue'
 import BaseLayout from '../layouts/BaseLayout.vue'
 import Login from '../pages/Login.vue'
+import Edit from '../pages/Edit.vue'
 export default  [
     { path: '/',
      component: BaseLayout,
@@ -13,6 +14,7 @@ export default  [
         { path: 'team', component: Team },
         { path: 'my', component: My },
         { path: 'search', component: Search },
+        { path: 'edit', component: Edit },
       ] 
     },
     {

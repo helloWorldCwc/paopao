@@ -1,5 +1,5 @@
 <template>
-    <van-search v-model="searchValue" shape="round" background="#4fc08d" placeholder="请输入搜索关键词" @search="onSearch" />
+    <van-search v-model="searchValue" shape="round" background="#4fc08d" @clear="clearKeyword" placeholder="请输入搜索关键词" @search="onSearch" />
     <van-divider content-position="left">选中标签</van-divider>
     <div>
         <van-row :gutter="8">
@@ -14,7 +14,7 @@
     </div>
     <van-divider content-position="left">选择标签</van-divider>
     <van-tree-select v-model:active-id="activeIds" @click-item="checkItem" v-model:main-active-index="activeIndex"
-        :items="items" />
+        :items="tagsItem" />
     <van-button type="success" size="large" @click="searchUser" >搜索</van-button>
 
 </template>
@@ -43,15 +43,19 @@ const items = [
         ],
     },
 ];
-const onSearch = searchValue => {
-    if(searchValue === ''){
-        activeIds.value = []
-        return
-    }
-    const data = items.flatMap(item => item.children).filter(item => searchValue.includes(item.text)).map(item => item.id);
-    activeIds.value = data
-    console.log(data);
+const tagsItem = ref([...items]);
+// TODO 这儿应该是控制选项栏即可
+const onSearch = (searchValue:string) => {
+    const serItems = JSON.parse(JSON.stringify(items));
+    serItems.forEach((tags:any) => {
+        tags.children = tags.children.filter(tag => tag.text.includes(searchValue));
+    })  
+    tagsItem.value = [...serItems]
+}
+const clearKeyword = () => {
+    console.log(1111);
     
+    tagsItem.value = items
 }
 const close = (tag) => {
     // 关闭标签
