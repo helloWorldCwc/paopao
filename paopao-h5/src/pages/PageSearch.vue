@@ -15,7 +15,7 @@
     <van-divider content-position="left">选择标签</van-divider>
     <van-tree-select v-model:active-id="activeIds" @click-item="checkItem" v-model:main-active-index="activeIndex"
         :items="items" />
-    <van-button type="success" size="large" @click="searchUser">搜索</van-button>
+    <van-button type="success" size="large" @click="searchUser" >搜索</van-button>
 
 </template>
 
@@ -64,7 +64,8 @@ const checkItem = item => {
 }
 // 用户搜索， 通过标签的方式
 const searchUser = () => {
-
+    console.log('开始搜索');
+    
 }
 </script>
 

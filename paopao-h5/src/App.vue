@@ -3,7 +3,7 @@ import BaseLayout from './layouts/BaseLayout.vue'
 </script>
 
 <template>
- <BaseLayout></BaseLayout>
+<router-view></router-view>
 </template>
 
 <style scoped>

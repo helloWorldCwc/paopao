@@ -6,7 +6,7 @@
     </van-nav-bar>
     <router-view />
     <van-tabbar v-model="active" @change="onChange" route>
-        <van-tabbar-item icon="home-o" name="index" to="/"> 主页 </van-tabbar-item>
+        <van-tabbar-item icon="home-o" name="index" to="/index"> 主页 </van-tabbar-item>
         <van-tabbar-item icon="search" name="team"  to="/team">队伍</van-tabbar-item>
         <van-tabbar-item icon="friends-o" name="my"  to="/my">我的</van-tabbar-item>
     </van-tabbar>
