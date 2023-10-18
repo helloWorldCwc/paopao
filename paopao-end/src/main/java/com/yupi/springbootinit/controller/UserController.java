@@ -308,4 +308,15 @@ public class UserController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
+
+    /**
+     * 查询用户信息通过标签的方式
+     * @param tags
+     * @return
+     */
+    @GetMapping("/tags")
+    public BaseResponse<List<UserVO> > queryUserByTags(@RequestParam("tags") List<String> tags){
+        List<UserVO> userVOList = userService.queryUserByTags(tags);
+        return ResultUtils.success(userVOList);
+    }
 }

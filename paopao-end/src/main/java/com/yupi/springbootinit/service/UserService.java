@@ -118,4 +118,5 @@ public interface UserService extends IService<User> {
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 
+    List<UserVO> queryUserByTags(List<String> tags);
 }

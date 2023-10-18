@@ -2,9 +2,14 @@ package com.yupi.springbootinit.service.impl;
 
 import static com.yupi.springbootinit.constant.UserConstant.USER_LOGIN_STATE;
 
+import cn.hutool.core.lang.Opt;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.yupi.springbootinit.common.ErrorCode;
 import com.yupi.springbootinit.constant.CommonConstant;
 import com.yupi.springbootinit.exception.BusinessException;
@@ -16,8 +21,8 @@ import com.yupi.springbootinit.model.vo.LoginUserVO;
 import com.yupi.springbootinit.model.vo.UserVO;
 import com.yupi.springbootinit.service.UserService;
 import com.yupi.springbootinit.utils.SqlUtils;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -268,5 +273,43 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
+    }
+
+    /**
+     * 查询用户标签
+     * @param tags 用户标签列表
+     * @return 用户信息
+     */
+    @Override
+    public List<UserVO> queryUserByTags(List<String> tags){
+        LambdaQueryWrapper<User> userLambdaQueryWrapper = Wrappers.<User>lambdaQuery();
+        for (String tag : tags) {
+           userLambdaQueryWrapper = userLambdaQueryWrapper.like(User::getTags, tag);
+        }
+        List<User> users = baseMapper.selectList(userLambdaQueryWrapper);
+        List<User> usersList = Optional.ofNullable(users).orElse(new ArrayList<>());
+        List<UserVO> userVOList = new ArrayList<>();
+        usersList.forEach(user -> {
+            UserVO userVO = new UserVO();
+            BeanUtils.copyProperties(user, userVO);
+            userVOList.add(userVO);
+        });
+        return userVOList;
+    }
+
+    /**
+     * 通过内存的方式查询
+     * @return
+     */
+    @Deprecated
+    private List<UserVO> queryUserByTagsCaChe(List<String> tags){
+        return Optional.ofNullable(baseMapper.selectList(Wrappers.<User>lambdaQuery())).orElse(new ArrayList<>()).stream()
+                .filter(user -> {
+                    Gson gson = new Gson();
+                    Set<String> list = gson.fromJson(user.getTags(), new TypeToken<Set<String>>(){}.getType());
+                    return new HashSet<>(tags).containsAll(list);
+                })
+                .map(this::getUserVO)
+                .collect(Collectors.toList());
     }
 }
