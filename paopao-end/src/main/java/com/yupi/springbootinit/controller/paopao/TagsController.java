@@ -6,6 +6,7 @@ import com.yupi.springbootinit.model.entity.Tags;
 import com.yupi.springbootinit.service.TagsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,23 +31,21 @@ public class TagsController {
     private TagsService tagsService;
     @GetMapping("all")
     @ApiOperation("查询所有标签")
-    public BaseResponse<Object> allTags(){
-        List<Tags> list = tagsService.list();
-        List<TagsDto> allTags = Optional.ofNullable(list).orElse(new ArrayList<>()).stream()
+    public BaseResponse<List<TagsDto>> allTags(){
+        List<Tags> list = Optional.ofNullable(tagsService.list()).orElse(new ArrayList<Tags>());
+        List<TagsDto> allTags = list.stream()
                 .filter(tag -> tag.getIsParent() == 1)
                 .map(TagsDto::tagsToTagsDto)
                 .collect(Collectors.toList());
-        allTags.forEach(dto -> {
-            list.forEach(tag -> {
-                if(Objects.equals(dto.getId(), tag.getParentId()) && tag.getIsParent() == 0){
-                    List<TagsDto> children = dto.getChildren();
-                    TagsDto tagsDto = new TagsDto();
-                    tagsDto.setText(tag.getTagName());
-                    tagsDto.setId(tag.getId());
-                    children.add(tagsDto);
-                }
-            });
-        });
+        allTags.forEach(dto -> list.forEach(tag -> {
+            if(Objects.equals(dto.getId(), tag.getParentId()) && tag.getIsParent() == 0){
+                List<TagsDto> children = dto.getChildren();
+                TagsDto tagsDto = new TagsDto();
+                tagsDto.setText(tag.getTagName());
+                tagsDto.setId(tag.getId());
+                children.add(tagsDto);
+            }
+        }));
         return ResultUtils.success(allTags);
     }
 }
