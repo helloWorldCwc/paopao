@@ -3,9 +3,9 @@
         <!-- <div style="margin-bottom: 10px;">请登录</div> -->
         <van-form @submit="onSubmit">
             <van-cell-group inset>
-                <van-field v-model="username" name="username" label="用户名" placeholder="用户名"
+                <van-field v-model="userAccount" name="userAccount" label="用户名" placeholder="用户名"
                     :rules="[{ required: true, message: '请填写用户名' }]" />
-                <van-field v-model="password" type="password" name="password" label="密码" placeholder="密码"
+                <van-field v-model="userPassword" type="password" name="userPassword" label="密码" placeholder="密码"
                     :rules="[{ required: true, message: '请填写密码' }]" />
             </van-cell-group>
             <div style="margin: 16px;">
@@ -20,10 +20,23 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-const username = ref('');
-const password = ref('');
-const onSubmit = (values) => {
-    console.log('submit', values);
+import { useRouter } from 'vue-router'
+import request from '../utils/request'
+const router = useRouter();
+const userAccount = ref('ccTest');
+const userPassword = ref('123456789');
+const onSubmit = async (data) => {
+    console.log('submit', data);
+   const res =  await request({
+        url: '/user/login',
+        method: 'post',
+        data,
+        withCredentials: true,
+    })
+    if(res.data.code == 0){
+       router.replace("/")
+    }
+    
 };
 
 </script>

@@ -7,9 +7,12 @@ import com.yupi.springbootinit.model.vo.UserVO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.DigestUtils;
 
 import java.util.Collections;
 import java.util.List;
+
+import static com.sun.javafx.font.FontResource.SALT;
 
 /**
  * 用户服务测试
@@ -22,21 +25,26 @@ public class UserServiceTest {
 
     @Resource
     private UserService userService;
-
+    private static final String SALT = "cc";
     @Test
     void userRegister() {
-        String userAccount = "yupi";
-        String userPassword = "";
-        String checkPassword = "123456";
+        String userAccount = "cctest";
+        String userPassword = "123456789";
+        String checkPassword = "123456789";
         try {
             long result = userService.userRegister(userAccount, userPassword, checkPassword);
             Assertions.assertEquals(-1, result);
-            userAccount = "yu";
+            userAccount = "yutest";
             result = userService.userRegister(userAccount, userPassword, checkPassword);
             Assertions.assertEquals(-1, result);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
+    }
+    @Test
+    void nd5Test(){
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + "123").getBytes());
+        System.out.println(encryptPassword);
     }
     @Test
     void userTagesTest(){
