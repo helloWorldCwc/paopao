@@ -10,7 +10,7 @@
                 </van-tag>
             </van-col>
         </van-row>
-        <van-empty v-if="activeIds.length === 0" image-size="50" description="未选择标签" />
+        <van-empty v-if="activeIds.length === 0" image-size="50" description="未选择标签" style="padding: 0;" />
     </div>
     <van-divider content-position="left">选择标签</van-divider>
     <van-tree-select v-model:active-id="activeIds" @click-item="checkItem" v-model:main-active-index="activeIndex"
@@ -21,15 +21,18 @@
 
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import request from '../utils/request'
+import { ref, reactive,onMounted } from 'vue'
+import  {TreeSelectChild, TreeSelectItem, showLoadingToast, closeToast } from 'vant'
 import { useRouter } from 'vue-router'
 const router = useRouter();
 const searchValue = ref('')
 
 // select
-const activeIds = ref(['男', '女']);
+const activeIds = ref([]);
 const activeIndex = ref(0);
-const items = [
+// 原始字符串
+let items:TreeSelectItem[] = [
     {
         text: '性别',
         children: [
@@ -46,12 +49,12 @@ const items = [
         ],
     },
 ];
-const tagsItem = ref([...items]);
+const tagsItem = ref<TreeSelectItem[]>([]);
 // TODO 这儿应该是控制选项栏即可
 const onSearch = (searchValue:string) => {
     const serItems = JSON.parse(JSON.stringify(items));
-    serItems.forEach((tags:any) => {
-        tags.children = tags.children.filter(tag => tag.text.includes(searchValue));
+    serItems.forEach((tags: any) => {
+        tags.children = tags.children.filter((tag: TreeSelectChild) => tag.text.includes(searchValue));
     })  
     tagsItem.value = [...serItems]
 }
@@ -77,8 +80,31 @@ const searchUser = () => {
         query: {
             tags: activeIds.value.join(','),
         }
-    })
+    }) 
 }
+const getTagsList = async () => {
+    showLoadingToast({
+        message: '加载中...',
+        forbidClick: false,
+    });
+    const {data} = await request({
+        url: '/tags/all',
+    })
+    closeToast()
+    data.data.forEach((item: any) => {
+       item.children = item.children.map((tag:any) => {
+         tag.id = tag.text
+         return tag;
+       })
+    })
+    tagsItem.value = data.data
+    items = data.data
+}
+
+// 钩子
+onMounted( () => {
+    getTagsList();
+})
 </script>
 
 
