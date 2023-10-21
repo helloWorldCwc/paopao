@@ -13,7 +13,7 @@ export type User = {
   
     userProfile?: string;
   
-    tags?: string[];
+    tags?: string;
   
     userRole: string;
   

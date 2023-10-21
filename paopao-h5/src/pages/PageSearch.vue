@@ -22,7 +22,10 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter();
 const searchValue = ref('')
+
 // select
 const activeIds = ref(['男', '女']);
 const activeIndex = ref(0);
@@ -57,7 +60,7 @@ const clearKeyword = () => {
     
     tagsItem.value = items
 }
-const close = (tag) => {
+const close = (tag:string) => {
     // 关闭标签
     activeIds.value.splice(activeIds.value.indexOf(tag), 1);
 }
@@ -68,8 +71,13 @@ const checkItem = item => {
 }
 // 用户搜索， 通过标签的方式
 const searchUser = () => {
-    console.log('开始搜索');
-    
+    console.log('开始搜索', activeIds.value);
+    router.push({
+        path: '/searchResult',
+        query: {
+            tags: activeIds.value.join(','),
+        }
+    })
 }
 </script>
 

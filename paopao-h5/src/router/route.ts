@@ -5,6 +5,8 @@ import Search from '../pages/PageSearch.vue'
 import BaseLayout from '../layouts/BaseLayout.vue'
 import Login from '../pages/Login.vue'
 import Edit from '../pages/Edit.vue'
+import SearchResult from '../pages/SearchResult.vue'
+
 export default  [
     { path: '/',
      component: BaseLayout,
@@ -15,6 +17,7 @@ export default  [
         { path: 'my', component: My },
         { path: 'search', component: Search },
         { path: 'edit', component: Edit },
+        { path: 'searchResult', component: SearchResult },
       ] 
     },
     {
