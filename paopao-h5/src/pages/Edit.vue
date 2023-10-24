@@ -18,14 +18,28 @@
 
 
 <script setup lang="ts">
+import { showToast, showLoadingToast,closeToast } from 'vant';
+import {updateMy} from '../apis/user'
 import {ref, reactive} from 'vue'
 import { useRoute } from 'vue-router';
 const route = useRoute()
 const form = reactive({
     ...route.query
 })
-const onSubmit = (values: any) => {
-console.log('submit', values);
+const onSubmit = async (values: any) => {
+  showLoadingToast({
+  message: '修改中...',
+});
+  const userReq = {
+    [form.type as string]: values.value
+  }
+  const res = await updateMy(userReq);
+  console.log(res.data.code === 0);
+  if(res.data.code === 0){
+    showToast('修改成功')
+    form.formName = ''
+  }
+  closeToast()
 };
 
 </script>

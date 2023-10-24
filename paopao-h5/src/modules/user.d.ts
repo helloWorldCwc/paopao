@@ -17,6 +17,12 @@ export type User = {
   
     userRole: string;
   
-    createTime: Date;
+    createTime: String;
 
+}
+
+export type UserUpdateMyReq = {
+   serName?:string
+   userAvatar?:string
+   userProfile?:string
 }

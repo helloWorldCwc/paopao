@@ -3,13 +3,13 @@ import router from '../router/index'
 const instance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8888/api',
     timeout: 2000,
-  });
+});
 
   // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
     console.log('我开始请求了', config);
-    config.withCredentials = true; // 设置在跨域的时候也携带cookies信息
+    config.withCredentials = true
     return config;
   }, function (error) {
     // 对请求错误做些什么
@@ -22,10 +22,11 @@ instance.interceptors.response.use(function (response) {
     // 对响应数据做点什么
 
     console.log('我请求成功了', response);
-    const {data} =  response.data
-    if(data.code === 401){
-      console.log('401登录过期了');
+    const res =  response.data
+      
+    if(res.code === 40100){
       router.replace("/login")
+      return Promise.reject(response);
     }
     return response;
   }, function (error) {
