@@ -1,14 +1,21 @@
 <template>
-    <!-- <van-cell title="账号"  :value="user.userAccount" /> -->
-    <van-cell title="昵称" is-link :value="user.userName" @click="clickCell('昵称', user.userName, 'userName')" />
-    <van-cell title="简介" is-link  :value="user.userProfile" @click="clickCell('简介', user.userProfile, 'userProfile')" />
-    <van-cell title="头像" is-link   >
-        <img :src="user.userAvatar" style="width: 50px;height: 50px;">
-    </van-cell>
-    <van-cell title="标签" is-link  >
-        <van-tag type="primary" closable  v-for="(item,index) in user.tags" :key="index" >{{item}}</van-tag>
-    </van-cell>
-    <van-cell title="创建时间"  :value="(user.createTime as string)" />
+    <template v-if="user">
+        <!-- <van-cell title="账号"  :value="user.userAccount" /> -->
+        <van-cell title="昵称" is-link :value="user.userName" @click="clickCell('昵称', user.userName as string, 'userName')" />
+        <van-cell title="简介" is-link  :value="user.userProfile" @click="clickCell('简介', user.userProfile as string, 'userProfile')" />
+        <van-cell title="头像" is-link   >
+            <img :src="user.userAvatar" style="width: 50px;height: 50px;">
+        </van-cell>
+        <van-cell title="标签" is-link  >
+            <van-tag type="primary" closable  v-for="(item,index) in user.tags" :key="index" >{{item}}</van-tag>
+        </van-cell>
+        <van-cell title="创建时间"  :value="(user.createTime as string)" />
+    </template>
+    
+    <template v-else>
+        <van-empty description="请先登录" />
+    </template>
+
 </template>
 
 
@@ -20,17 +27,7 @@ import { User } from '../modules/user';
 import { showToast } from 'vant';
 const router = useRouter();
 const route = useRoute();
-const user = ref<User>({
-    id: 1,
-
-    userAccount: 'da',
-
-    userRole: '12',
-
-    createTime: '333',
-    userName: 'aa',
-    userProfile: 'bb'
-});
+const user = ref<User>();
 
 const clickCell = (formLabel: string, formName: string, type?:string) => {
     router.push({
