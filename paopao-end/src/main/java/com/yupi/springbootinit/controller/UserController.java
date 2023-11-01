@@ -1,11 +1,10 @@
 package com.yupi.springbootinit.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yupi.springbootinit.annotation.AuthCheck;
-import com.yupi.springbootinit.common.BaseResponse;
-import com.yupi.springbootinit.common.DeleteRequest;
-import com.yupi.springbootinit.common.ErrorCode;
-import com.yupi.springbootinit.common.ResultUtils;
+import com.yupi.springbootinit.common.*;
 import com.yupi.springbootinit.config.WxOpenConfig;
 import com.yupi.springbootinit.constant.UserConstant;
 import com.yupi.springbootinit.exception.BusinessException;
@@ -318,5 +317,18 @@ public class UserController {
     public BaseResponse<List<UserVO> > queryUserByTags(@RequestParam("tags") List<String> tags){
         List<UserVO> userVOList = userService.queryUserByTags(tags);
         return ResultUtils.success(userVOList);
+    }
+
+    /**
+     *  主页推荐列表用户信息
+     * @param request
+     * @return
+     */
+
+    // TODO 未完成
+    @GetMapping("/recommend")
+    public BaseResponse<List<UserVO>> recommendUsers(HttpServletRequest request, PageRequest pageRequest){
+        List<UserVO> userRecommendUsers =  userService.queryRecommendUserList(request, pageRequest.getCurrent(), pageRequest.getPageSize());
+        return ResultUtils.success(userRecommendUsers);
     }
 }

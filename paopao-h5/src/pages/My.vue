@@ -7,7 +7,7 @@
             <img :src="user.userAvatar" style="width: 50px;height: 50px;">
         </van-cell>
         <van-cell title="标签" is-link  >
-            <van-tag type="primary" closable  v-for="(item,index) in user.tags" :key="index" >{{item}}</van-tag>
+            <van-tag type="primary" style="margin-left: 5px;" closable  v-for="(item,index) in JSON.parse(user.tags as string)" :key="index" >{{item}}</van-tag>
         </van-cell>
         <van-cell title="创建时间"  :value="(user.createTime as string)" />
     </template>
@@ -45,6 +45,8 @@ onMounted(async () => {
     const res = await getCurrentUser();
     if(res.data.code === 0){
         user.value = res.data.data;
+        console.log(res.data.data);
+        
     }else {
         showToast('获取用户信息失败')
         router.push('/login?back=' + route.path)

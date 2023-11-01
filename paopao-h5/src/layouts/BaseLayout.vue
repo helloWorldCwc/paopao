@@ -19,7 +19,7 @@ import { showToast } from 'vant'
 const router = useRouter()
 const onClickLeft = () => history.back();
 const active = ref('index');
-const onChange = (index) => showToast(`标签 ${index}`);
+const onChange = (index: string) => showToast(`标签 ${index}`);
 const goSearch = () => {
     router.push('/search')
 }

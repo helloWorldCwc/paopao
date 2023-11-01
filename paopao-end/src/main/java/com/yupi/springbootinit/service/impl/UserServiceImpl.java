@@ -2,11 +2,13 @@ package com.yupi.springbootinit.service.impl;
 
 import static com.yupi.springbootinit.constant.UserConstant.USER_LOGIN_STATE;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Opt;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -23,14 +25,19 @@ import com.yupi.springbootinit.service.UserService;
 import com.yupi.springbootinit.utils.SqlUtils;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StopWatch;
 
 /**
  * 用户服务实现
@@ -46,6 +53,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 盐值，混淆密码
      */
     private static final String SALT = "cc";
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -294,6 +304,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             BeanUtils.copyProperties(user, userVO);
             userVOList.add(userVO);
         });
+        return userVOList;
+    }
+
+    @Override
+    public List<UserVO> queryRecommendUserList(HttpServletRequest request, long pageNum, long pageSize) {
+        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        String recommendKey = "";
+        // 如果没有用户信息，那么就推荐默认
+        if(user != null){
+            recommendKey = String.format("user:recommend:%s", user.getId());
+            List<UserVO> userVOList = (List<UserVO>) valueOperations.get(recommendKey);
+            if(userVOList != null){
+                return userVOList;
+            }
+        }
+        Page<User> page = page(new Page<>(pageNum, pageSize), queryWrapper);
+        List<UserVO> userVOList = BeanUtil.copyToList(page.getRecords(), UserVO.class);
+        if(user != null){
+            //        30秒过期
+            valueOperations.set(recommendKey, userVOList, 30, TimeUnit.SECONDS);
+        }
+
         return userVOList;
     }
 

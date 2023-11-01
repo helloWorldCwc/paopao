@@ -2,7 +2,7 @@ import axios, {AxiosInstance} from 'axios'
 import router from '../router/index'
 const instance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8888/api',
-    timeout: 2000,
+    timeout: 20000,
 });
 
   // 添加请求拦截器

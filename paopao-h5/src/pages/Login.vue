@@ -22,17 +22,22 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import request from '../utils/request'
+import  { showLoadingToast, closeToast } from 'vant'
 const router = useRouter();
 const userAccount = ref('ccTest');
 const userPassword = ref('123456789');
 const onSubmit = async (data) => {
     console.log('submit', data);
+    showLoadingToast({
+       message: '登录中...',
+       forbidClick: false,
+  });
    const res =  await request({
         url: '/user/login',
         method: 'post',
         data,
-        withCredentials: true,
     })
+    closeToast()
     if(res.data.code == 0){
        router.replace("/")
     }

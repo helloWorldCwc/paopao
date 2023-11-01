@@ -22,3 +22,10 @@ export const getCurrentUser = () => {
         method: 'get',
     })
 }
+
+export const getRecommendUsers = () => {
+    return request({
+        url: '/user/recommend',
+        method: 'get',
+    })
+}

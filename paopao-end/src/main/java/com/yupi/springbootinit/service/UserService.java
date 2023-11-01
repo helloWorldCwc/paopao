@@ -119,4 +119,11 @@ public interface UserService extends IService<User> {
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 
     List<UserVO> queryUserByTags(List<String> tags);
+
+    /**
+     *  查询用户推荐信息，
+     * @param request
+     * @return
+     */
+    List<UserVO> queryRecommendUserList(HttpServletRequest request,  long pageNum, long pageSize);
 }

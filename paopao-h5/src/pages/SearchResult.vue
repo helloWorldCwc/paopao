@@ -1,22 +1,11 @@
 <template>
-   <van-card
-   v-for="(user) in userList"
-    :desc="user.userProfile"
-    :title="user.userName"
-    thumb="https://fastly.jsdelivr.net/npm/@vant/assets/ipad.jpeg"
-    >
-  <template #tags>
-    <van-tag plain v-for="tag in JSON.parse(user.tags)" type="primary" style="margin-right: 5px;">{{ tag }}</van-tag>
-  </template>
-  <template #footer>
-    <van-button size="mini" @click="concatMe">联系方式</van-button>
-  </template>
-</van-card>
+<UserRecommed  :user-list="userList" @concatMe="concatMe"></UserRecommed>
 <van-empty description="暂无用户" v-if="userList.length < 1" />
 </template>
 
 
 <script setup lang="ts">
+import UserRecommed from '../components/UserRecommed.vue'
 import request from '../utils/request.ts'
 import {ref, reactive, onMounted} from 'vue'
 import  { showLoadingToast, closeToast } from 'vant'
@@ -26,8 +15,8 @@ import { useRoute ,LocationQueryValue} from 'vue-router';
 const route = useRoute();
 const tags = route.query.tags as LocationQueryValue
 const userList = ref<User[]>([])
-const concatMe = () => {
-  console.log('点击了开始联系我了。');
+const concatMe = (value:string  ) => {
+  console.log('点击了开始联系我了。', value);
   
 }
 const getUserList = async () => {
