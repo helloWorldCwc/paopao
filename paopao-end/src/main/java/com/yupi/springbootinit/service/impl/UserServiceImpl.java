@@ -37,7 +37,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.StopWatch;
 
 /**
  * 用户服务实现
@@ -315,7 +314,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String recommendKey = "";
         // 如果没有用户信息，那么就推荐默认
         if(user != null){
-            recommendKey = String.format("user:recommend:%s", user.getId());
+            recommendKey = String.format("paopao:user:recommend:%s", user.getId());
             List<UserVO> userVOList = (List<UserVO>) valueOperations.get(recommendKey);
             if(userVOList != null){
                 return userVOList;
