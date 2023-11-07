@@ -16,12 +16,15 @@ import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.entity.UserTeam;
 import com.yupi.springbootinit.model.enums.TeamStatusEnum;
 import com.yupi.springbootinit.service.TeamService;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
 * @author cc
@@ -33,6 +36,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     implements TeamService {
     @Resource
     private UserTeamMapper userTeamMapper;
+    @Resource
+    private RedissonClient redissonClient;
     @Override
     @Transactional
     public Long add(TeamRequest teamRequest, User user) {
@@ -56,28 +61,39 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "加密队伍需要设置密码");
         }
         // 还需要判断一个人创建的队伍数量
-        // TODO 这儿有并发问题，大量请求后会出现多加的情况（单机可以通过悲观锁）
-        QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", user.getId());
-        long count = count(queryWrapper);
-        if(count >= 10){
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "一个人创建的队伍数量不能超过10个");
-        }
+        // TODO 这儿有并发问题，大量请求后会出现多加的情况（单机可以通过悲观锁，好像暂时没有出现问题）
+        RLock lock = redissonClient.getLock("team:add:lock");
         Team team = new Team();
-        team.setUserid(user.getId());
-        team.setCreatetime(new Date());
-        team.setUpdatetime(new Date());
-        BeanUtil.copyProperties(teamRequest, team);
-        boolean save = save(team);
-        // 默认情况下，队伍的创建者也是属于成员
-        UserTeam userTeam = new UserTeam();
-        userTeam.setUserid(user.getId());
-        userTeam.setTeamid(team.getId());
-        userTeam.setJointime(new Date());
-        userTeam.setCreatetime(new Date());
-        userTeam.setUpdatetime(new Date());
-        userTeamMapper.insert(userTeam);
-        return team.getId();
+        try {
+            if(lock.tryLock(0L, 30L, TimeUnit.SECONDS)){
+                QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("userId", user.getId());
+                long count = count(queryWrapper);
+                if(count >= 10){
+                    throw new BusinessException(ErrorCode.OPERATION_ERROR, "一个人创建的队伍数量不能超过10个");
+                }
+                team.setUserid(user.getId());
+                team.setCreatetime(new Date());
+                team.setUpdatetime(new Date());
+                BeanUtil.copyProperties(teamRequest, team);
+                boolean save = save(team);
+                // 默认情况下，队伍的创建者也是属于成员
+                UserTeam userTeam = new UserTeam();
+                userTeam.setUserid(user.getId());
+                userTeam.setTeamid(team.getId());
+                userTeam.setJointime(new Date());
+                userTeam.setCreatetime(new Date());
+                userTeam.setUpdatetime(new Date());
+                userTeamMapper.insert(userTeam);
+            }
+            return team.getId();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }finally {
+            if(lock != null){
+                lock.unlock();
+            }
+        }
     }
 
     @Override
