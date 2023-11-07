@@ -10,6 +10,7 @@ import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.mapper.TeamMapper;
 import com.yupi.springbootinit.mapper.UserTeamMapper;
 import com.yupi.springbootinit.model.dto.team.TeamRequest;
+import com.yupi.springbootinit.model.dto.team.TeamUpdateRequest;
 import com.yupi.springbootinit.model.entity.Team;
 import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.entity.UserTeam;
@@ -108,6 +109,20 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         // 队友
         userTeamMapper.delete(Wrappers.<UserTeam>lambdaUpdate().eq(UserTeam::getTeamid, teamId).eq(UserTeam::getUserid, userId));
         return true;
+    }
+
+    @Override
+    public Boolean updateTeam(TeamUpdateRequest teamUpdateRequest, User user) {
+        Long id = teamUpdateRequest.getId();
+        Team team = getById(id);
+        if(team == null){
+            throw new  BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if(!team.getUserid().equals(user.getId())){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "不是队伍创建者不能修改");
+        }
+        Team teamCopy = BeanUtil.copyProperties(teamUpdateRequest, Team.class);
+        return update(teamCopy, Wrappers.<Team>lambdaUpdate().eq(Team::getId, teamUpdateRequest.getId()));
     }
 }
 
