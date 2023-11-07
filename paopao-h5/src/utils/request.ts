@@ -27,6 +27,9 @@ instance.interceptors.response.use(function (response) {
     if(res.code === 40100){
       router.replace("/login")
       return Promise.reject(response);
+    }else if(res.code === 40000){
+      alert(res.message)
+      return Promise.reject(response);
     }
     return response;
   }, function (error) {

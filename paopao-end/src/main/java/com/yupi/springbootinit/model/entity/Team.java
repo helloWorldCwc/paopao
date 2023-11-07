@@ -2,6 +2,7 @@ package com.yupi.springbootinit.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -19,12 +20,12 @@ public class Team implements Serializable {
      * 
      */
     @TableId
-    private Integer id;
+    private Long id;
 
     /**
      * 创建用户
      */
-    private Integer userid;
+    private Long userid;
 
     /**
      * 队伍名称
@@ -59,12 +60,16 @@ public class Team implements Serializable {
     /**
      * 是否删除
      */
+    @TableLogic(value =  "0", delval = "1")
     private Integer isdeleted;
 
     /**
      * 更新时间
+     *
      */
     private Date updatetime;
+    private Date expiredTime;
+    private String description;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

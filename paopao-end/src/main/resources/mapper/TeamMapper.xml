@@ -15,12 +15,15 @@
             <result property="createtime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="isdeleted" column="isDeleted" jdbcType="TINYINT"/>
             <result property="updatetime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="expiredTime" column="expiredTime" jdbcType="TIMESTAMP"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,userId,teamName,
         maxNum,status,password,
         teamTags,createTime,isDeleted,
+        expiredTime,description,
         updateTime
     </sql>
 </mapper>
