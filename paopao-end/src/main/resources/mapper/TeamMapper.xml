@@ -18,6 +18,27 @@
             <result property="expiredTime" column="expiredTime" jdbcType="TIMESTAMP"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
     </resultMap>
+    <resultMap id="BaseResultMapVo" type="com.yupi.springbootinit.model.vo.TeamVo" >
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="userId" jdbcType="INTEGER"/>
+        <result property="teamname" column="teamName" jdbcType="VARCHAR"/>
+        <result property="maxnum" column="maxNum" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="TINYINT"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="teamtags" column="teamTags" jdbcType="VARCHAR"/>
+        <result property="expiredTime" column="expiredTime" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <collection property="users" ofType="com.yupi.springbootinit.model.vo.TeamUserVo" >
+            <id property="userId" column="t3UserId" />
+            <result property="userName" column="userName" />
+            <result property="userAvatar" column="userAvatar" />
+            <result property="userProfile" column="userProfile"/>
+            <result property="userRole" column="userRole" />
+            <result property="jointime" column="joinTime" />
+            <result property="tags" column="tags" />
+        </collection>
+    </resultMap>
 
     <sql id="Base_Column_List">
         id,userId,teamName,
@@ -26,4 +47,47 @@
         expiredTime,description,
         updateTime
     </sql>
+    <sql id="BASE_COLUMN_LIST_Vo">
+        t1.id, t1.userId,t1.teamName,
+        t1.maxNum,t1.status
+        t1.teamTags,t1.createTime,
+        t1.expiredTime,t1.description,
+        t2.joinTime, t3.userName,
+        t3.userAvatar,t3.userProfile,
+        t3.tags
+    </sql>
+    <sql id="SELECT_CONDITION">
+        <where>
+            <if test="teamname != null and teamname != ''">
+                and  t1.teamName like concat('%', #{teamname} ,'%')
+            </if>
+            <if test="description != null and description != ''">
+                and  t1.description like concat('%', #{description} ,'%')
+            </if>
+            and  t1.status = #{status}
+        </where>
+    </sql>
+    <select id="selectTeamUserPage" resultMap="BaseResultMapVo">
+        SELECT
+        t1.id, t1.userId,t1.teamName,
+        t1.maxNum,t1.status,
+        t1.teamTags,t1.createTime,
+        t1.expiredTime,t1.description,
+        t2.joinTime, t3.userName,
+        t3.userAvatar,t3.userProfile,
+        t3.tags,t3.id as t3UserId
+        FROM team t1
+            LEFT JOIN user_team t2 ON t1.id = t2.teamId
+            LEFT JOIN `user`  t3 ON t3.id = t2.userId
+        <include refid="SELECT_CONDITION" />
+        order by t1.createTime desc
+         LIMIT #{current},  #{pageSize}
+    </select>
+    <select id="selectPageCount" resultType="java.lang.Long">
+        SELECT count(1) FROM team t1
+        LEFT JOIN user_team t2 ON t1.id = t2.teamId
+        LEFT JOIN `user`  t3 ON t3.id = t2.userId
+        <include refid="SELECT_CONDITION" />
+    </select>
+
 </mapper>

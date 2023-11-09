@@ -1,11 +1,8 @@
 package com.yupi.springbootinit.model.vo;
-
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author cwc
@@ -16,6 +13,7 @@ import java.util.Date;
 public class TeamVo {
     private Long id;
 
+    private  Long userId;
 
     /**
      * 队伍名称
@@ -41,6 +39,13 @@ public class TeamVo {
      * 队伍标签（JSON）
      */
     private String teamtags;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date expiredTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
     private String description;
+
+    private List<TeamUserVo> users;
+
+    private Integer isCreated;
 }

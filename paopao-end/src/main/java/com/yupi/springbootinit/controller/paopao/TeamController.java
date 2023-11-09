@@ -11,10 +11,6 @@ import com.yupi.springbootinit.common.ErrorCode;
 import com.yupi.springbootinit.common.ResultUtils;
 import com.yupi.springbootinit.constant.UserConstant;
 import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.mapper.TeamMapper;
-import com.yupi.springbootinit.model.dto.post.PostAddRequest;
-import com.yupi.springbootinit.model.dto.post.PostQueryRequest;
-import com.yupi.springbootinit.model.dto.post.PostUpdateRequest;
 import com.yupi.springbootinit.model.dto.team.JoinTeamRequest;
 import com.yupi.springbootinit.model.dto.team.TeamRequest;
 import com.yupi.springbootinit.model.dto.team.TeamSearchRequest;
@@ -110,14 +106,22 @@ public class TeamController {
         return ResultUtils.success(teamService.quitTeam(deleteRequest, user));
     }
     @GetMapping("/page/list")
-    public BaseResponse<Page<TeamVo>> teamList(TeamSearchRequest teamSearchRequest){
-        final LambdaQueryWrapper<Team> wrapper = Wrappers.<Team>lambdaQuery()
-                .like(StringUtils.isNotBlank(teamSearchRequest.getTeamname()), Team::getTeamname, teamSearchRequest.getTeamname());
-        Page<Team> page = teamService.page(new Page<Team>(teamSearchRequest.getCurrent(), teamSearchRequest.getPageSize()), wrapper);
-        List<TeamVo> teamVoList = BeanUtil.copyToList(page.getRecords(), TeamVo.class);
+    public BaseResponse<Page<TeamVo>> teamList(TeamSearchRequest teamSearchRequest, HttpServletRequest request){
+        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         Page<TeamVo> teamVoPage = new Page<>();
-        BeanUtil.copyProperties(page, teamVoPage);
-        teamVoPage.setRecords(teamVoList);
+        teamVoPage.setCurrent(teamSearchRequest.getCurrent());
+        List<TeamVo> page = teamService.selectTeamAndTeamUserPage(teamSearchRequest);
+        // 是不是队伍创建者
+        if(user != null){
+            page.forEach(item -> {
+                if(item.getUserId().equals(user.getId())){
+                    item.setIsCreated(1);
+                }
+            });
+        }
+        teamVoPage.setRecords(page);
+        teamVoPage.setTotal(teamService.selectTeamAndTeamUserCount(teamSearchRequest));
+        teamVoPage.setSize(teamSearchRequest.getPageSize());
         return ResultUtils.success(teamVoPage);
     }
 

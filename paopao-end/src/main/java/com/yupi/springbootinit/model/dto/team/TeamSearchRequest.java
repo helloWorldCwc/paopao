@@ -2,6 +2,7 @@ package com.yupi.springbootinit.model.dto.team;
 
 import com.yupi.springbootinit.common.PageRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 

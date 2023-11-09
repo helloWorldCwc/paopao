@@ -10,11 +10,13 @@ import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.mapper.TeamMapper;
 import com.yupi.springbootinit.mapper.UserTeamMapper;
 import com.yupi.springbootinit.model.dto.team.TeamRequest;
+import com.yupi.springbootinit.model.dto.team.TeamSearchRequest;
 import com.yupi.springbootinit.model.dto.team.TeamUpdateRequest;
 import com.yupi.springbootinit.model.entity.Team;
 import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.entity.UserTeam;
 import com.yupi.springbootinit.model.enums.TeamStatusEnum;
+import com.yupi.springbootinit.model.vo.TeamVo;
 import com.yupi.springbootinit.service.TeamService;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -38,6 +40,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     private UserTeamMapper userTeamMapper;
     @Resource
     private RedissonClient redissonClient;
+    @Resource
+    private TeamMapper teamMapper;
     @Override
     @Transactional
     public Long add(TeamRequest teamRequest, User user) {
@@ -54,9 +58,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         if(new Date().after(teamRequest.getExpiredTime())){
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍过期时间错误");
         }
-        if(TeamStatusEnum.PRIVATE.getStatus() == teamRequest.getStatus()){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍是私有的，无法加入");
-        }
+//        if(TeamStatusEnum.PRIVATE.getStatus() == teamRequest.getStatus()){
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍是私有的，无法加入");
+//        }
         if(TeamStatusEnum.encrypt.getStatus() == teamRequest.getStatus() && (teamRequest.getPassword() == null || "".equals(teamRequest.getPassword()))){
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "加密队伍需要设置密码");
         }
@@ -139,6 +143,21 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         }
         Team teamCopy = BeanUtil.copyProperties(teamUpdateRequest, Team.class);
         return update(teamCopy, Wrappers.<Team>lambdaUpdate().eq(Team::getId, teamUpdateRequest.getId()));
+    }
+
+    @Override
+    public List<TeamVo> selectTeamAndTeamUserPage(TeamSearchRequest teamSearchRequest) {
+        if(teamSearchRequest.getCurrent() < 1){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        teamSearchRequest.setPageSize(Math.min(teamSearchRequest.getPageSize(), 1000));
+        teamSearchRequest.setCurrent((teamSearchRequest.getCurrent() - 1) * teamSearchRequest.getPageSize());
+        return teamMapper.selectTeamUserPage(teamSearchRequest);
+    }
+
+    @Override
+    public long selectTeamAndTeamUserCount(TeamSearchRequest teamSearchRequest) {
+        return teamMapper.selectPageCount(teamSearchRequest);
     }
 }
 
