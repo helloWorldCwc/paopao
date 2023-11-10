@@ -1,5 +1,6 @@
 package com.yupi.springbootinit.model.dto.team;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -38,6 +39,7 @@ public class TeamUpdateRequest {
      * 队伍标签（JSON）
      */
     private String teamtags;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date expiredTime;
     private String description;
 }

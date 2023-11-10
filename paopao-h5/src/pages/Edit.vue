@@ -35,7 +35,7 @@ const onSubmit = async (values: any) => {
   }
   const res = await updateMy(userReq);
   console.log(res.data.code === 0);
-  if(res.data.code === 0){
+  if(res.code === 0){
     showToast('修改成功')
     form.formName = ''
   }

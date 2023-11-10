@@ -65,6 +65,8 @@
                 and  t1.description like concat('%', #{description} ,'%')
             </if>
             and  t1.status = #{status}
+            and  t1.expiredTime is not null
+            and  t1.expiredTime <![CDATA[>]]> now()
         </where>
     </sql>
     <select id="selectTeamUserPage" resultMap="BaseResultMapVo">

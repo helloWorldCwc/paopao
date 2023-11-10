@@ -18,6 +18,7 @@ import com.yupi.springbootinit.model.entity.UserTeam;
 import com.yupi.springbootinit.model.enums.TeamStatusEnum;
 import com.yupi.springbootinit.model.vo.TeamVo;
 import com.yupi.springbootinit.service.TeamService;
+import com.yupi.springbootinit.service.UserService;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,10 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     private RedissonClient redissonClient;
     @Resource
     private TeamMapper teamMapper;
+
+    @Resource
+    private UserService userService;
+
     @Override
     @Transactional
     public Long add(TeamRequest teamRequest, User user) {
@@ -138,7 +143,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         if(team == null){
             throw new  BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if(!team.getUserid().equals(user.getId())){
+        // 只有队伍的创建者和管理员可以修改
+        if(!team.getUserid().equals(user.getId()) || !userService.isAdmin(user)){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "不是队伍创建者不能修改");
         }
         Team teamCopy = BeanUtil.copyProperties(teamUpdateRequest, Team.class);

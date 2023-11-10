@@ -23,7 +23,7 @@ const getUserList = async () => {
   });
  const res = await getRecommendUsers()
   closeToast()
-  userList.value = res.data.data;
+  userList.value = res.data;
 }
 // 钩子
 onMounted( () => {

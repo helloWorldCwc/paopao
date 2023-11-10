@@ -18,6 +18,7 @@ export type User = {
     userRole: string;
   
     createTime: String;
+    userId : number
 
 }
 

@@ -74,7 +74,6 @@ const checkItem = item => {
 }
 // 用户搜索， 通过标签的方式
 const searchUser = () => {
-    console.log('开始搜索', activeIds.value);
     router.push({
         path: '/searchResult',
         query: {
@@ -87,18 +86,18 @@ const getTagsList = async () => {
         message: '加载中...',
         forbidClick: false,
     });
-    const {data} = await request({
+    const res = await request({
         url: '/tags/all',
     })
     closeToast()
-    data.data.forEach((item: any) => {
+    res.data.forEach((item: any) => {
        item.children = item.children.map((tag:any) => {
          tag.id = tag.text
          return tag;
        })
     })
-    tagsItem.value = data.data
-    items = data.data
+    tagsItem.value = res.data
+    items = res.data
 }
 
 // 钩子

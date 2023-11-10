@@ -43,10 +43,8 @@ const clickCell = (formLabel: string, formName: string, type?:string) => {
 
 onMounted(async () => {
     const res = await getCurrentUser();
-    if(res.data.code === 0){
-        user.value = res.data.data;
-        console.log(res.data.data);
-        
+    if(res.code === 0){
+        user.value = res.data;
     }else {
         showToast('获取用户信息失败')
         router.push('/login?back=' + route.path)

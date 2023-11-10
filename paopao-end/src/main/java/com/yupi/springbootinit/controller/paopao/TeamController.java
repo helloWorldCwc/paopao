@@ -23,6 +23,7 @@ import com.yupi.springbootinit.service.TeamService;
 import com.yupi.springbootinit.service.UserService;
 import com.yupi.springbootinit.service.UserTeamService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
@@ -143,6 +144,20 @@ public class TeamController {
         return ResultUtils.success(teamService.updateTeam(teamUpdateRequest, user));
     }
 
+
+    @GetMapping("/one/{id}")
+    public BaseResponse<TeamVo> getOne(@PathVariable("id") long id, HttpServletRequest request){
+        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        if(user == null){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        Team team = teamService.getById(id);
+        if(team == null){
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "没有该队伍");
+        }
+        TeamVo teamVo = BeanUtil.copyProperties(team, TeamVo.class);
+        return ResultUtils.success(teamVo);
+    }
     // endregion
 
 }

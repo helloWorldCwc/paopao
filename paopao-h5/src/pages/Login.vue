@@ -38,7 +38,7 @@ const onSubmit = async (data) => {
         data,
     })
     closeToast()
-    if(res.data.code == 0){
+    if(res.code == 0){
        router.replace("/")
     }
     

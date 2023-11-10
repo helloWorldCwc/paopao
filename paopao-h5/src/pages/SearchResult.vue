@@ -24,14 +24,14 @@ const getUserList = async () => {
         message: '加载中...',
         forbidClick: false,
     });
-  const {data} = await request({
+  const res = await request({
         url: '/user/tags',
         params: {
              tags
         }
     })
     closeToast()
-    userList.value = data.data;
+    userList.value = res.data;
 }
 // 钩子
 onMounted( () => {
