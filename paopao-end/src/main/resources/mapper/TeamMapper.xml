@@ -5,18 +5,18 @@
 <mapper namespace="com.yupi.springbootinit.mapper.TeamMapper">
 
     <resultMap id="BaseResultMap" type="com.yupi.springbootinit.model.entity.Team">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="userid" column="userId" jdbcType="INTEGER"/>
-            <result property="teamname" column="teamName" jdbcType="VARCHAR"/>
-            <result property="maxnum" column="maxNum" jdbcType="INTEGER"/>
-            <result property="status" column="status" jdbcType="TINYINT"/>
-            <result property="password" column="password" jdbcType="VARCHAR"/>
-            <result property="teamtags" column="teamTags" jdbcType="VARCHAR"/>
-            <result property="createtime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="isdeleted" column="isDeleted" jdbcType="TINYINT"/>
-            <result property="updatetime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="expiredTime" column="expiredTime" jdbcType="TIMESTAMP"/>
-            <result property="description" column="description" jdbcType="VARCHAR"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userid" column="userId" jdbcType="INTEGER"/>
+        <result property="teamname" column="teamName" jdbcType="VARCHAR"/>
+        <result property="maxnum" column="maxNum" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="TINYINT"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="teamtags" column="teamTags" jdbcType="VARCHAR"/>
+        <result property="createtime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="isdeleted" column="isDeleted" jdbcType="TINYINT"/>
+        <result property="updatetime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="expiredTime" column="expiredTime" jdbcType="TIMESTAMP"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
     </resultMap>
     <resultMap id="BaseResultMapVo" type="com.yupi.springbootinit.model.vo.TeamVo" >
         <id property="id" column="id" jdbcType="INTEGER"/>

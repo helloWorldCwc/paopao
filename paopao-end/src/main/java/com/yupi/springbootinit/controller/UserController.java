@@ -1,6 +1,7 @@
 package com.yupi.springbootinit.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yupi.springbootinit.annotation.AuthCheck;
@@ -19,10 +20,14 @@ import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.vo.LoginUserVO;
 import com.yupi.springbootinit.model.vo.UserVO;
 import com.yupi.springbootinit.service.UserService;
-import java.util.List;
+
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.yupi.springbootinit.utils.SimilarityUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
@@ -330,5 +335,30 @@ public class UserController {
     public BaseResponse<List<UserVO>> recommendUsers(HttpServletRequest request, PageRequest pageRequest){
         List<UserVO> userRecommendUsers =  userService.queryRecommendUserList(request, pageRequest.getCurrent(), pageRequest.getPageSize());
         return ResultUtils.success(userRecommendUsers);
+    }
+
+    /**
+     *  心动模式匹配
+     * @param request
+     * @return
+     */
+    @GetMapping("/heart")
+    public BaseResponse<List<UserVO>> heartPattern(HttpServletRequest request){
+        User loginUser = userService.getLoginUser(request);
+        List<User> userList = userService.list().stream().filter(user -> StrUtil.isNotBlank(user.getTags())).collect(Collectors.toList());
+        SortedMap<Integer, Double> sortedMap = new TreeMap<>();
+        for (int i = 0; i < userList.size(); i++) {
+            double distance = SimilarityUtil.editDistance(loginUser.getTags(), userList.get(i).getTags());
+            sortedMap.put(i, distance);
+        }
+        List<Map.Entry<Integer, Double>> heartUsers = sortedMap.entrySet()
+                .stream().limit(4).collect(Collectors.toList());
+        final ArrayList<UserVO> userVOS = new ArrayList<>();
+        heartUsers.forEach(map -> {
+            Integer index = map.getKey();
+            User user = userList.get(index);
+            userVOS.add(BeanUtil.copyProperties(user, UserVO.class));
+        });
+        return ResultUtils.success(userVOS);
     }
 }

@@ -12,14 +12,15 @@ export default  [
     { path: '/',
      component: BaseLayout,
      redirect: '/index',
+
       children: [
-        { path: 'index', component: Index },
-        { path: 'team', component: Team },
-        { path: 'my', component: My },
-        { path: 'search', component: Search },
-        { path: 'edit', component: Edit },
-        { path: 'addTeam', component: AddTeam },
-        { path: 'searchResult', component: SearchResult },
+        { path: 'index', component: Index, meta: {title: '主页'},},
+        { path: 'team', component: Team ,meta: {title: '队伍页'},},
+        { path: 'my', component: My,meta: {title: '我的信息'}, },
+        { path: 'search', component: Search, meta: {title: '信息搜索'}, },
+        { path: 'edit', component: Edit , meta: {title: '信息编辑'},},
+        { path: 'addTeam', component: AddTeam , meta: {title: '新增队伍'},},
+        { path: 'searchResult', component: SearchResult, meta: {title: '搜索结果'}, },
       ] 
     },
     {

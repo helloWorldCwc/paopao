@@ -1,5 +1,5 @@
 <template>
-    <van-nav-bar title="标题"  left-arrow @click-left="onClickLeft">
+    <van-nav-bar :title="title"  left-arrow @click-left="onClickLeft">
         <template #right>
             <van-icon name="search" size="18" @Click="goSearch" />
         </template>
@@ -19,10 +19,17 @@ import { showToast } from 'vant'
 const router = useRouter()
 const onClickLeft = () => history.back();
 const active = ref('index');
-const onChange = (index: string) => showToast(`标签 ${index}`);
+// const onChange = (index: string) => showToast(`标签 ${index}`);
 const goSearch = () => {
     router.push('/search')
 }
+const title = ref<string>('用户页');
+router.beforeEach((to, from) => {
+    if(to.meta.title){
+        title.value = to.meta.title as string
+    } 
+    return true;
+})
 </script>
 
 

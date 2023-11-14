@@ -1,5 +1,11 @@
 <template>
+<van-cell center title="心动模式">
+  <template #right-icon>
+    <van-switch v-model="isHeartPattern" />
+  </template>
+</van-cell>
 <UserRecommed  :user-list="userList" @concatMe="concatMe"></UserRecommed>
+
 <van-empty description="暂无用户" v-if="userList.length < 1" />
 </template>
 
@@ -12,17 +18,13 @@ import {ref, reactive, onMounted} from 'vue'
 import  { showLoadingToast, closeToast } from 'vant'
 import type {User} from '../modules/user.d.ts'
 const userList = ref<User[]>([])
+const isHeartPattern = ref(false);
 const concatMe = (value:string) => {
  console.log('点击了开始联系我了。', value);
  
 }
 const getUserList = async () => {
- showLoadingToast({
-       message: '加载中...',
-       forbidClick: false,
-  });
  const res = await getRecommendUsers()
-  closeToast()
   userList.value = res.data;
 }
 // 钩子
